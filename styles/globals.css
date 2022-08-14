@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+.btn-primary {
+  @apply bg-gray-800 rounded-md p-2 m-1 text-white hover:bg-gray-900;
+}
+.input_group {
+  @apply flex flex-col mt-4;
+}
+.input_group input,
+.input_group select,
+.input_group textarea {
+  @apply p-2 outline-none border border-blue-900 my-1 rounded-md text-blue-900 shadow-md
+     focus:border-yellow-400 focus:text-yellow-500 focus:shadow-lg;
+}
+@tailwind utilities;
