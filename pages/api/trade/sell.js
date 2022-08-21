@@ -174,6 +174,20 @@ export default async function handler(req, res) {
 
         return res.status(201).send({ sellData, buyData, userBalance });
       }
+
+      case "PATCH": {
+        const data = await req.body;
+        console.log(data);
+        // updating buy request
+        const sellData = await Sell.findOneAndUpdate(
+          { _id: data.trade.orderid},
+         { qty:data.trade.qty,
+          commodity:data.trade.commodity},
+          { new: true }
+        );
+
+        return res.status(200).send({sellData});
+      }
       default: {
         return res.status(401).json({ message: "Invalid Request Method" });
       }

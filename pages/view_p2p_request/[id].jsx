@@ -3,10 +3,12 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import axios from "axios";
 import Buyp2p from "../../models/Buyp2p";
 import SellPercentage from "../../models/SellPercentage";
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function ViewP2PRequest({ data, banks, percentage }) {
   const [trade, setTrade] = useState(JSON.parse(data)[0]);
   const [uBanks, setUBanks] = useState(JSON.parse(banks));
+
 
   console.log({ data, uBanks });
 
@@ -38,6 +40,25 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
     }
   };
 
+  const handleChange=(value,type)=>{
+    if(type=="qty"){
+      setTrade({...trade,qty:value})
+    }else{
+      setTrade({...trade,commodity:value})
+    }
+  }
+
+  const handleSubmit=async(e)=>{
+    // e.preventD
+    let res = await axios.patch("/api/trade/sell", {
+      _id: trade._id,
+      trade
+    });
+    if (res.status == 200) {
+      toast.success("Updated Successfully!")
+    }
+  }
+
   return (
     <div className="w-full h-screen overflow-y-scroll py-6 px-4">
       <h1 className="text-3xl font-bold border-b border-[#131722] pb-6">
@@ -58,18 +79,38 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
             </div>
             <div className="my-2 w-1/2 flex flex-col ml-2">
               <b>Quantity:</b>{" "}
-              <span className="uppercase bg-gray-200 p-2 rounded-md">
+              {/* <span className="uppercase bg-gray-200 p-2 rounded-md">
                 {trade.qty}
-              </span>
+              </span> */}
+              <input
+              id="quantity"
+              type="text"
+              value={trade?.qty}
+              placeholder="Quantity"
+              onChange={(e) => {
+                handleChange(e.target.value,"qty");
+              }}
+              className="outline-none border rounded-md border-gray-300 p-2 pl-4"
+            />
             </div>
           </div>
 
           <div className="flex">
             <div className="my-2 w-1/2 flex flex-col">
               <b>Commodity: </b>
-              <span className="uppercase bg-gray-200 p-2 rounded-md">
+              {/* <span className="uppercase bg-gray-200 p-2 rounded-md">
                 {trade.commodity}
-              </span>
+              </span> */}
+               <input
+              id="commodity"
+              type="text"
+              value={trade.commodity?.toUpperCase()}
+              placeholder="Commodity"
+              onChange={(e) => {
+                handleChange(e.target.value,"comodity");
+              }}
+              className="outline-none border rounded-md border-gray-300 p-2 pl-4"
+            />
             </div>
             <div className="my-2 w-1/2 flex flex-col ml-2">
               <b>Status:</b>
@@ -79,7 +120,9 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
             </div>
           </div>
         </div>
-
+        <button className="btn-primary" onClick={handleSubmit}>
+                Submit
+              </button>
         <div className="flex flex-col mt-4">
           <h4 className="text-xl font-semibold">Seller Bank Details:</h4>
           <div className="flex">
