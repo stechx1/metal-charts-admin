@@ -3,14 +3,15 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import axios from "axios";
 import Buyp2p from "../../models/Buyp2p";
 import SellPercentage from "../../models/SellPercentage";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 
 export default function ViewP2PRequest({ data, banks, percentage }) {
   const [trade, setTrade] = useState(JSON.parse(data)[0]);
   const [uBanks, setUBanks] = useState(JSON.parse(banks));
-
-
-  console.log({ data, uBanks });
+  const [prices, setPrices] = useState({
+    gold: 0,
+    ukoil: 0,
+  });
 
   const approve = async () => {
     const response = await axios.put("/api/trade/sell", {
@@ -40,24 +41,66 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
     }
   };
 
-  const handleChange=(value,type)=>{
-    if(type=="qty"){
-      setTrade({...trade,qty:value})
-    }else{
-      setTrade({...trade,commodity:value})
-    }
-  }
+  const handleChange = (value, type) => {
+    if (type == "qty") {
+      debugger;
+      let amo = value * parseInt(prices.gold);
+      setTrade({ ...trade, qty: value, amount: amo });
 
-  const handleSubmit=async(e)=>{
+      // setTrade({ ...trade, qty: value });
+      // qtyChange(value);
+    } else {
+      setTrade({ ...trade, commodity: value });
+    }
+  };
+
+  const handleSubmit = async (e) => {
     // e.preventD
     let res = await axios.patch("/api/trade/sell", {
       _id: trade._id,
-      trade
+      trade,
     });
     if (res.status == 200) {
-      toast.success("Updated Successfully!")
+      toast.success("Updated Successfully!");
     }
-  }
+  };
+  const getPrices = async () => {
+    // const urlGold = `/api/Price/gold`;
+    // const urlUkoil = `/api/Price/ukoil`;
+    const response1 = await axios.get("/api/commodity/gold");
+    const response2 = await axios.get("/api/commodity/ukoil");
+    debugger;
+    setPrices({
+      gold: response1.data.price,
+      ukoil: response2.data.price,
+    });
+  };
+
+  const qtyChange = (value) => {
+    let amo = value * prices.gold;
+    setTrade({ ...trade, amount: amo });
+    // let minTarget = 5 / prices.gold;
+    // let qty = e.target.value;
+    // if (qty < minTarget) {
+    //   setError((prev) => {
+    //     return { ...prev, qty: `Amount Must be Morethan ${minTarget} Ounce` };
+    //   });
+    //   setData((prev) => {
+    //     return { ...prev, qty };
+    //   });
+    // } else {
+    //   let amo = qty * price;
+    //   console.log(amo);
+    //   setError("");
+    //   setData((prev) => {
+    //     return { ...prev, qty, amount: amo };
+    //   });
+    // }
+  };
+
+  useEffect(() => {
+    getPrices();
+  }, []);
 
   return (
     <div className="w-full h-screen overflow-y-scroll py-6 px-4">
@@ -70,11 +113,12 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
           <h4 className="text-xl font-semibold ">Trade Details:</h4>
           <div className="flex">
             <div className="my-2 w-1/2 flex flex-col">
-              <b>Amount:</b>{" "}
+              <b>Amount:</b>
               <span className="uppercase bg-gray-200 p-2 rounded-md">
-                ${trade.amount} - $
+                {/* ${trade.amount} - $
                 {trade.amount -
-                  (parseFloat(trade.amount) * parseFloat(percentage)) / 100}
+                  (parseFloat(trade.amount) * parseFloat(percentage)) / 100} */}
+                ${trade?.amount}
               </span>
             </div>
             <div className="my-2 w-1/2 flex flex-col ml-2">
@@ -83,15 +127,15 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
                 {trade.qty}
               </span> */}
               <input
-              id="quantity"
-              type="text"
-              value={trade?.qty}
-              placeholder="Quantity"
-              onChange={(e) => {
-                handleChange(e.target.value,"qty");
-              }}
-              className="outline-none border rounded-md border-gray-300 p-2 pl-4"
-            />
+                id="quantity"
+                type="text"
+                value={trade?.qty}
+                placeholder="Quantity"
+                onChange={(e) => {
+                  handleChange(e.target.value, "qty");
+                }}
+                className="outline-none border rounded-md border-gray-300 p-2 pl-4"
+              />
             </div>
           </div>
 
@@ -101,16 +145,16 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
               {/* <span className="uppercase bg-gray-200 p-2 rounded-md">
                 {trade.commodity}
               </span> */}
-               <input
-              id="commodity"
-              type="text"
-              value={trade.commodity?.toUpperCase()}
-              placeholder="Commodity"
-              onChange={(e) => {
-                handleChange(e.target.value,"comodity");
-              }}
-              className="outline-none border rounded-md border-gray-300 p-2 pl-4"
-            />
+              <input
+                id="commodity"
+                type="text"
+                value={trade.commodity?.toUpperCase()}
+                placeholder="Commodity"
+                onChange={(e) => {
+                  handleChange(e.target.value, "comodity");
+                }}
+                className="outline-none border rounded-md border-gray-300 p-2 pl-4"
+              />
             </div>
             <div className="my-2 w-1/2 flex flex-col ml-2">
               <b>Status:</b>
@@ -121,8 +165,8 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
           </div>
         </div>
         <button className="btn-primary" onClick={handleSubmit}>
-                Submit
-              </button>
+          Submit
+        </button>
         <div className="flex flex-col mt-4">
           <h4 className="text-xl font-semibold">Seller Bank Details:</h4>
           <div className="flex">

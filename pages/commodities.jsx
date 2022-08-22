@@ -1,5 +1,5 @@
 import { MainLayout } from "../components/layout";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 export default function Commodities() {
@@ -33,6 +33,10 @@ export default function Commodities() {
     date: 0,
   });
 
+  const [GoldPriceTrade, setGoldPriceTrade] = useState(0);
+  const container = useRef(null);
+  const containerOil = useRef(null);
+
   const updateUkoil = async () => {
     const response = await axios.post("/api/commodity/ukoil", {
       price: ukoil.price,
@@ -52,6 +56,56 @@ export default function Commodities() {
       setGold({ price: response.data.price, date: response.data.updated_at });
     }
   };
+  const TradePrice = (script, type) => {
+    script.async = true;
+    script.innerHTML = `{
+      "symbol":"${type}",
+      "width": "100%",
+      "colorTheme": "dark",
+      "isTransparent": true,
+      "locale": "en",
+      "style":"1",
+      "timezone":"Etc/USTC",
+      "interval":"D"
+    }`;
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
+    if (container?.current?.children[0]) {
+      container.current.removeChild(container.current.children[0]);
+    }
+    container?.current?.appendChild(script);
+  };
+
+  const TradePriceOil = (script, type) => {
+    script.async = true;
+    script.innerHTML = `{
+      "symbol":"${type}",
+      "width": "100%",
+      "colorTheme": "dark",
+      "isTransparent": true,
+      "locale": "en",
+      "style":"1",
+      "timezone":"Etc/USTC",
+      "interval":"D"
+    }`;
+
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
+    if (containerOil?.current?.children[0]) {
+      containerOil.current.removeChild(containerOil.current.children[0]);
+    }
+    containerOil?.current?.appendChild(script);
+  };
+  useEffect(() => {
+    let script = document.createElement("script");
+    let script2 = document.createElement("script");
+    TradePrice(script, "TVC:GOLD");
+    TradePriceOil(script2, "TVC:UKOIL");
+  }, [GoldPriceTrade]);
+
+  setInterval(() => {
+    setGoldPriceTrade(GoldPriceTrade + 1);
+  }, 30 * 60 * 1000);
 
   return (
     <div className="w-full h-screen overflow-y-scroll py-6 px-4">
@@ -62,7 +116,15 @@ export default function Commodities() {
       <div className="flex flex-col mt-4">
         <div className="bg-gray-800 p-1 mr-1 text-white border border-gray-300 flex justify-between flex-row items-center rounded-md overflow-hidden">
           <h3 className="text-lg font-semibold  text-center">Gold</h3>
-          <input
+          {/* <GetStatics type="TVC:GOLD" />; */}
+          <div
+            // className="tradingview-widget-container"
+            ref={container}
+            style={{ pointerEvents: "none" }}
+          >
+            <div className="tradingview-widget-container__widget"></div>
+          </div>
+          {/* <input
             className="p-2 text-center outline-none w-1/3 border text-gray-800 rounded-md "
             type="text"
             value={gold.price}
@@ -71,7 +133,7 @@ export default function Commodities() {
                 return { ...prev, price: e.target.value };
               });
             }}
-          />
+          /> */}
           <span>
             <b>Unit of Commodity</b>: Ounce
           </span>
@@ -88,7 +150,15 @@ export default function Commodities() {
 
         <div className="bg-gray-800 p-1 mt-2 mr-1 text-white border border-gray-300 flex justify-between flex-row items-center rounded-md overflow-hidden">
           <h3 className="text-lg font-semibold  text-center">Ukoil</h3>
-          <input
+          <div
+            // className="tradingview-widget-container"
+            ref={containerOil}
+            style={{ pointerEvents: "none" }}
+          >
+            <div className="tradingview-widget-container__widget"></div>
+          </div>
+          {/* <GetStatics type="TVC:UKOIL" /> */}
+          {/* <input
             className="p-2 text-center outline-none w-1/3 border text-gray-800 rounded-md "
             type="text"
             value={ukoil.price}
@@ -97,7 +167,7 @@ export default function Commodities() {
                 return { ...prev, price: e.target.value };
               });
             }}
-          />
+          /> */}
           <span>
             <b>Unit of Commodity</b>: Barrel
           </span>
@@ -112,6 +182,38 @@ export default function Commodities() {
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function GetStatics({ type }) {
+  console.log("GetStatics is called..");
+  const container = useRef(null);
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.async = true;
+    script.innerHTML = `{
+         "symbol": "${type}",
+         "width": "100%",
+         "colorTheme": "dark",
+         "isTransparent": true,
+         "locale": "en",
+         "style":"1",
+         "timezone":"Etc/USTC",
+         "interval":"D"
+          }`;
+
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js";
+    container.current.appendChild(script);
+  }, []);
+  return (
+    <div
+      // className="tradingview-widget-container"
+      ref={container}
+      style={{ pointerEvents: "none" }}
+    >
+      <div className="tradingview-widget-container__widget"></div>
     </div>
   );
 }
