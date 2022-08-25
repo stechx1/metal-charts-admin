@@ -145,7 +145,7 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
               {/* <span className="uppercase bg-gray-200 p-2 rounded-md">
                 {trade.commodity}
               </span> */}
-              <input
+              {/* <input
                 id="commodity"
                 type="text"
                 value={trade.commodity?.toUpperCase()}
@@ -154,7 +154,23 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
                   handleChange(e.target.value, "comodity");
                 }}
                 className="outline-none border rounded-md border-gray-300 p-2 pl-4"
-              />
+              /> */}
+              <select
+                name="commodity"
+                id="commodity"
+                // value="Uk Oil"
+                onChange={(e) => {
+                  handleChange(e.target.value, "comodity");
+                }}
+                style={{ width: "12rem" }}
+              >
+                <option value="Gold" selected={trade.commodity == "Gold"}>
+                  Gold
+                </option>
+                <option value="Uk Oil" selected={trade.commodity == "Uk Oil"}>
+                  Uk Oil
+                </option>
+              </select>
             </div>
             <div className="my-2 w-1/2 flex flex-col ml-2">
               <b>Status:</b>

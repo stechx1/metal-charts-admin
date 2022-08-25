@@ -117,14 +117,14 @@ export default function Commodities() {
         <div className="bg-gray-800 p-1 mr-1 text-white border border-gray-300 flex justify-between flex-row items-center rounded-md overflow-hidden">
           <h3 className="text-lg font-semibold  text-center">Gold</h3>
           {/* <GetStatics type="TVC:GOLD" />; */}
-          <div
+          {/* <div
             // className="tradingview-widget-container"
             ref={container}
             style={{ pointerEvents: "none" }}
           >
             <div className="tradingview-widget-container__widget"></div>
-          </div>
-          {/* <input
+          </div> */}
+          <input
             className="p-2 text-center outline-none w-1/3 border text-gray-800 rounded-md "
             type="text"
             value={gold.price}
@@ -133,7 +133,7 @@ export default function Commodities() {
                 return { ...prev, price: e.target.value };
               });
             }}
-          /> */}
+          />
           <span>
             <b>Unit of Commodity</b>: Ounce
           </span>
@@ -150,15 +150,15 @@ export default function Commodities() {
 
         <div className="bg-gray-800 p-1 mt-2 mr-1 text-white border border-gray-300 flex justify-between flex-row items-center rounded-md overflow-hidden">
           <h3 className="text-lg font-semibold  text-center">Ukoil</h3>
-          <div
+          {/* <div
             // className="tradingview-widget-container"
             ref={containerOil}
             style={{ pointerEvents: "none" }}
           >
             <div className="tradingview-widget-container__widget"></div>
-          </div>
+          </div> */}
           {/* <GetStatics type="TVC:UKOIL" /> */}
-          {/* <input
+          <input
             className="p-2 text-center outline-none w-1/3 border text-gray-800 rounded-md "
             type="text"
             value={ukoil.price}
@@ -167,7 +167,7 @@ export default function Commodities() {
                 return { ...prev, price: e.target.value };
               });
             }}
-          /> */}
+          />
           <span>
             <b>Unit of Commodity</b>: Barrel
           </span>
