@@ -44,7 +44,12 @@ export default function ViewP2PRequest({ data, banks, percentage }) {
   const handleChange = (value, type) => {
     if (type == "qty") {
       debugger;
-      let amo = value * parseInt(prices.gold);
+      let amo;
+      if (trade.commodity == "Gold") {
+        amo = value * parseInt(prices.gold);
+      } else {
+        amo = value * parseInt(prices.ukoil);
+      }
       setTrade({ ...trade, qty: value, amount: amo });
 
       // setTrade({ ...trade, qty: value });
